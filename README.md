@@ -19,7 +19,6 @@ The current version is a proof of concept that demonstrates the core architectur
   - No network access
   - Memory and CPU limits
   - Read-only filesystem
-  - Timeout protection (10 seconds)
 
 ## 🚀 Upcoming Features
 
@@ -92,7 +91,7 @@ Yantra implements multiple layers of security:
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/yantra.git
+git clone https://github.com/kimacchi/yantra.git
 cd yantra
 ```
 
