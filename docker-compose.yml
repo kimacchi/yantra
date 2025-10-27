@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_DB=yantra_db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d yantra_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  queue:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    depends_on:
+      db: { condition: service_healthy }
+      queue: { condition: service_healthy }
+
+
+  worker:
+    build: ./worker
+    depends_on:
+      db: { condition: service_healthy }
+      queue: { condition: service_healthy }
+    volumes:
+      # Mount the Docker socket to run containers!
+      - /var/run/docker.sock:/var/run/docker.sock
+      # Mount a host directory for sharing code with containers
+      # - ./tmp/executor_jobs:/tmp/executor_jobs
+
+volumes:
+  postgres_data:
