@@ -3,8 +3,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Generator
 
-# Database connection string
-DATABASE_URL = "postgresql://admin:admin@db/yantra_db"
+from config import DATABASE_URL
 
 # Create engine with connection pooling
 engine = create_engine(
