@@ -12,6 +12,7 @@ CREATE TABLE compilers (
     enabled BOOLEAN DEFAULT TRUE,
     build_status VARCHAR(50) DEFAULT 'pending', -- pending, building, ready, failed
     build_error TEXT,
+    build_logs TEXT, -- Full Docker build output (stdout and stderr combined)
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     built_at TIMESTAMP WITH TIME ZONE
@@ -25,6 +26,8 @@ CREATE TABLE submissions (
     status VARCHAR(50) NOT NULL DEFAULT 'PENDING',
     output_stdout TEXT,
     output_stderr TEXT,
+    uploaded_files TEXT, -- JSON array of uploaded file metadata
+    files_directory VARCHAR(500), -- Path to job-specific directory containing uploaded files
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     completed_at TIMESTAMP WITH TIME ZONE,
     FOREIGN KEY (language) REFERENCES compilers(id)
