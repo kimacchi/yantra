@@ -95,7 +95,6 @@ logs/
 *.log
 
 # Temporary files and directories
-tmp/
 temp/
 .cache/
 

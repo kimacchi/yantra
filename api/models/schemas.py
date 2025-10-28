@@ -4,6 +4,15 @@ from typing import Optional, List
 from datetime import datetime
 
 
+# File Upload Schemas
+class FileMetadata(BaseModel):
+    """Schema for uploaded file metadata."""
+
+    filename: str = Field(..., description="Original filename")
+    size: int = Field(..., description="File size in bytes")
+    mime_type: Optional[str] = Field(None, description="MIME type of the file")
+
+
 # Submission Schemas
 class SubmissionRequest(BaseModel):
     """Schema for code submission request."""
@@ -19,6 +28,7 @@ class SubmissionResponse(BaseModel):
     stdout: Optional[str] = None
     stderr: Optional[str] = None
     completed_at: Optional[datetime] = None
+    uploaded_files: Optional[List[FileMetadata]] = None
 
 
 # Compiler Schemas

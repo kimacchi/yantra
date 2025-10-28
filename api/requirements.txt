@@ -4,3 +4,4 @@ psycopg2-binary  # PostgreSQL driver for SQLAlchemy
 redis            # For talking to Redis
 pydantic
 sqlalchemy       # ORM for database operations
+python-multipart

@@ -12,6 +12,17 @@ REDIS_BUILD_QUEUE_NAME = "build_queue"
 # Database Configuration
 DATABASE_URL = "postgresql://admin:admin@db/yantra_db"
 
+# File Upload Configuration
+MAX_UPLOAD_SIZE = 25 * 1024 * 1024  # 25MB total per submission
+MAX_FILES_PER_SUBMISSION = 10  # Maximum number of files per submission
+ALLOWED_EXTENSIONS = {
+    ".txt", ".json", ".csv", ".xml", ".yaml", ".yml",
+    ".md", ".dat", ".log", ".tsv", ".ini", ".conf",
+    ".properties", ".sql", ".html", ".css", ".js"
+}  # Whitelist of allowed file extensions
+EXECUTOR_JOBS_DIR = "/tmp/executor_jobs"  # Directory for job files
+CONTAINER_MOUNT_PATH = "/data"  # Path where files are mounted in container
+
 # API Configuration
 API_TITLE = "Yantra Code Execution API"
 API_DESCRIPTION = """

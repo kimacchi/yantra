@@ -160,12 +160,14 @@ def cleanup_compiler(compiler_id, image_tag):
 
 def run_job(job_id, code, language):
     """Execute user code in an isolated Docker container."""
+    files_directory = None
     try:
-        # 1. Update DB to 'RUNNING'
+        # 1. Update DB to 'RUNNING' and get files directory
         with get_db_session() as db:
             submission = db.query(Submission).filter(Submission.job_id == job_id).first()
             if submission:
                 submission.status = 'RUNNING'
+                files_directory = submission.files_directory
 
         # 2. Get compiler configuration
         compiler_config = get_compiler_config(language)
@@ -181,10 +183,20 @@ def run_job(job_id, code, language):
             f"--memory={compiler_config['memory_limit']}",  # Dynamic memory limit
             f"--cpus={compiler_config['cpu_limit']}",       # Dynamic CPU limit
             "--read-only",                                   # Make filesystem read-only
+        ]
+
+        # Add volume mount if files were uploaded
+        if files_directory and os.path.exists(files_directory):
+            docker_command.extend([
+                "-v", f"{files_directory}:/data:ro"  # Mount files as read-only
+            ])
+
+        docker_command.extend([
             "-i",                                            # Pass STDIN to container
             "-w", "/sandbox",                                # Set working directory
             compiler_config['image_tag']                     # Dynamic image
-        ] + compiler_config['run_command']                   # Dynamic run command
+        ])
+        docker_command.extend(compiler_config['run_command'])  # Dynamic run command
 
         # 4. Execute the command
         process = subprocess.run(
@@ -207,6 +219,12 @@ def run_job(job_id, code, language):
                 submission.output_stderr = stderr
                 submission.completed_at = func.now()
 
+        # 6. Cleanup uploaded files immediately after execution
+        if files_directory and os.path.exists(files_directory):
+            import shutil
+            shutil.rmtree(files_directory)
+            print(f"Cleaned up files directory: {files_directory}")
+
     except subprocess.TimeoutExpired:
         timeout = compiler_config.get('timeout_seconds', 10) if compiler_config else 10
         with get_db_session() as db:
@@ -215,6 +233,13 @@ def run_job(job_id, code, language):
                 submission.status = 'TIMEOUT'
                 submission.output_stderr = f'Execution timed out after {timeout} seconds.'
                 submission.completed_at = func.now()
+
+        # Cleanup files on timeout
+        if files_directory and os.path.exists(files_directory):
+            import shutil
+            shutil.rmtree(files_directory)
+            print(f"Cleaned up files directory after timeout: {files_directory}")
+
     except Exception as e:
         print(f"DEBUG: Job {job_id} failed: {e}", file=sys.stderr)
         with get_db_session() as db:
@@ -223,6 +248,12 @@ def run_job(job_id, code, language):
                 submission.status = 'ERROR'
                 submission.output_stderr = str(e)
                 submission.completed_at = func.now()
+
+        # Cleanup files on error
+        if files_directory and os.path.exists(files_directory):
+            import shutil
+            shutil.rmtree(files_directory)
+            print(f"Cleaned up files directory after error: {files_directory}")
 
 
 def process_job_queue():

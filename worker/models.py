@@ -40,5 +40,7 @@ class Submission(Base):
     status = Column(String(50), nullable=False, default='PENDING')
     output_stdout = Column(Text)
     output_stderr = Column(Text)
+    uploaded_files = Column(Text)  # JSON array of file metadata
+    files_directory = Column(String(500))  # Path to job's file directory
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     completed_at = Column(TIMESTAMP(timezone=True))
