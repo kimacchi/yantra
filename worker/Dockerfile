@@ -23,4 +23,6 @@ COPY requirements.txt .
 RUN pip install -r requirements.txt
 
 COPY worker.py .
+COPY database.py .
+COPY models.py .
 CMD ["python", "worker.py"]
