@@ -74,7 +74,7 @@ Yantra uses a microservices architecture with 5 main components:
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/yourusername/yantra.git
+git clone https://github.com/kimacchi/yantra.git
 cd yantra
 ```
 
