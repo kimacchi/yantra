@@ -1,5 +1,6 @@
 fastapi
 uvicorn[standard]
-psycopg2-binary  # For talking to Postgres
+psycopg2-binary  # PostgreSQL driver for SQLAlchemy
 redis            # For talking to Redis
 pydantic
+sqlalchemy       # ORM for database operations
