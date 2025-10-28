@@ -251,6 +251,36 @@ class CompilerController:
         return {"message": f"Build queued for compiler '{compiler_id}'"}
 
     @staticmethod
+    def get_build_logs(compiler_id: str, db: Session) -> Dict[str, Any]:
+        """
+        Get the full build logs for a compiler.
+
+        Args:
+            compiler_id: The compiler identifier
+            db: Database session
+
+        Returns:
+            Dictionary with build logs and metadata
+
+        Raises:
+            HTTPException: If compiler not found
+        """
+        compiler = db.query(Compiler).filter(Compiler.id == compiler_id).first()
+
+        if not compiler:
+            raise HTTPException(status_code=404, detail=f"Compiler '{compiler_id}' not found")
+
+        return {
+            "compiler_id": compiler.id,
+            "compiler_name": compiler.name,
+            "build_status": compiler.build_status,
+            "build_logs": compiler.build_logs or "No build logs available",
+            "build_error": compiler.build_error,
+            "built_at": str(compiler.built_at) if compiler.built_at else None,
+            "updated_at": str(compiler.updated_at),
+        }
+
+    @staticmethod
     def _to_response(compiler: Compiler) -> CompilerResponse:
         """
         Convert database model to response schema.

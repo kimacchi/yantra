@@ -46,4 +46,18 @@ export const compilerApi = {
   rebuildCompiler: async (id: string): Promise<void> => {
     await api.post(`/compilers/${id}/build`);
   },
+
+  // Get build logs
+  getBuildLogs: async (id: string): Promise<{
+    compiler_id: string;
+    compiler_name: string;
+    build_status: string;
+    build_logs: string;
+    build_error: string | null;
+    built_at: string | null;
+    updated_at: string;
+  }> => {
+    const response = await api.get(`/compilers/${id}/logs`);
+    return response.data;
+  },
 };

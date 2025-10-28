@@ -139,3 +139,19 @@ async def delete_compiler(compiler_id: str, db: Session = Depends(get_db)):
 async def trigger_build(compiler_id: str, db: Session = Depends(get_db)):
     """Manually trigger a rebuild of the compiler's Docker image."""
     return CompilerController.trigger_build(compiler_id, db)
+
+
+@router.get(
+    "/{compiler_id}/logs",
+    summary="Get build logs",
+    description="""
+    Retrieve the full Docker build output logs for a compiler.
+
+    Returns the complete stdout and stderr from the most recent build attempt.
+    Useful for debugging build failures and understanding the build process.
+    """,
+    response_description="Build logs",
+)
+async def get_build_logs(compiler_id: str, db: Session = Depends(get_db)):
+    """Get the full build logs for a compiler."""
+    return CompilerController.get_build_logs(compiler_id, db)

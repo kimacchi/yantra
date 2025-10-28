@@ -82,6 +82,15 @@ def build_compiler(compiler_id):
             with get_db_session() as db:
                 compiler = db.query(Compiler).filter(Compiler.id == compiler_id).first()
                 if compiler:
+                    # Combine stdout and stderr for full build logs
+                    full_logs = ""
+                    if process.stdout:
+                        full_logs += f"=== STDOUT ===\n{process.stdout}\n"
+                    if process.stderr:
+                        full_logs += f"=== STDERR ===\n{process.stderr}\n"
+
+                    compiler.build_logs = full_logs or "No output captured"
+
                     if process.returncode == 0:
                         # Build succeeded
                         compiler.build_status = 'ready'
@@ -97,13 +106,21 @@ def build_compiler(compiler_id):
                         compiler.updated_at = func.now()
                         print(f"Failed to build compiler {compiler_id}: {error_msg}", file=sys.stderr)
 
-    except subprocess.TimeoutExpired:
+    except subprocess.TimeoutExpired as e:
         error_msg = "Build timed out after 10 minutes"
+        timeout_logs = ""
+        if hasattr(e, 'stdout') and e.stdout:
+            timeout_logs += f"=== STDOUT (before timeout) ===\n{e.stdout}\n"
+        if hasattr(e, 'stderr') and e.stderr:
+            timeout_logs += f"=== STDERR (before timeout) ===\n{e.stderr}\n"
+        timeout_logs += f"\n{error_msg}"
+
         with get_db_session() as db:
             compiler = db.query(Compiler).filter(Compiler.id == compiler_id).first()
             if compiler:
                 compiler.build_status = 'failed'
                 compiler.build_error = error_msg
+                compiler.build_logs = timeout_logs or error_msg
                 compiler.updated_at = func.now()
         print(f"Build timeout for compiler {compiler_id}", file=sys.stderr)
     except Exception as e:
@@ -113,6 +130,7 @@ def build_compiler(compiler_id):
             if compiler:
                 compiler.build_status = 'failed'
                 compiler.build_error = error_msg
+                compiler.build_logs = f"=== EXCEPTION ===\n{error_msg}"
                 compiler.updated_at = func.now()
         print(f"Build error for compiler {compiler_id}: {e}", file=sys.stderr)
 

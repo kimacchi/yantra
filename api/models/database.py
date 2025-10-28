@@ -25,6 +25,7 @@ class Compiler(Base):
     enabled = Column(Boolean, default=True)
     build_status = Column(String(50), default="pending")
     build_error = Column(Text)
+    build_logs = Column(Text)  # Full Docker build output
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     built_at = Column(TIMESTAMP(timezone=True))

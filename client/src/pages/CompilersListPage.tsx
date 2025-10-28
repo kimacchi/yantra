@@ -4,6 +4,7 @@ import { Compiler } from '../types/compiler';
 import CompilerCard from '../components/CompilerCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 import DeleteConfirmDialog from '../components/DeleteConfirmDialog';
+import BuildDrawer from '../components/BuildDrawer';
 
 export default function CompilersListPage() {
   const [compilers, setCompilers] = useState<Compiler[]>([]);
@@ -11,6 +12,9 @@ export default function CompilersListPage() {
   const [error, setError] = useState('');
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [compilerToDelete, setCompilerToDelete] = useState<Compiler | null>(null);
+  const [buildDrawerOpen, setBuildDrawerOpen] = useState(false);
+  const [selectedCompilerId, setSelectedCompilerId] = useState('');
+  const [selectedCompilerName, setSelectedCompilerName] = useState('');
 
   const fetchCompilers = async () => {
     try {
@@ -60,6 +64,12 @@ export default function CompilersListPage() {
     } catch (err: any) {
       setError(err.response?.data?.detail || err.message || 'Failed to trigger rebuild');
     }
+  };
+
+  const handleViewBuild = (id: string, name: string) => {
+    setSelectedCompilerId(id);
+    setSelectedCompilerName(name);
+    setBuildDrawerOpen(true);
   };
 
   if (loading) {
@@ -119,6 +129,7 @@ export default function CompilersListPage() {
               compiler={compiler}
               onDelete={() => handleDeleteClick(compiler)}
               onRebuild={handleRebuild}
+              onViewBuild={handleViewBuild}
             />
           ))}
         </div>
@@ -132,6 +143,13 @@ export default function CompilersListPage() {
           setDeleteDialogOpen(false);
           setCompilerToDelete(null);
         }}
+      />
+
+      <BuildDrawer
+        isOpen={buildDrawerOpen}
+        onClose={() => setBuildDrawerOpen(false)}
+        compilerId={selectedCompilerId}
+        compilerName={selectedCompilerName}
       />
     </div>
   );

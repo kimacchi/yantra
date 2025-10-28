@@ -6,9 +6,10 @@ interface CompilerCardProps {
   compiler: Compiler;
   onDelete: (id: string) => void;
   onRebuild: (id: string) => void;
+  onViewBuild: (id: string, name: string) => void;
 }
 
-export default function CompilerCard({ compiler, onDelete, onRebuild }: CompilerCardProps) {
+export default function CompilerCard({ compiler, onDelete, onRebuild, onViewBuild }: CompilerCardProps) {
   return (
     <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 hover:border-gray-600 transition-colors">
       <div className="flex items-start justify-between mb-4">
@@ -52,17 +53,23 @@ export default function CompilerCard({ compiler, onDelete, onRebuild }: Compiler
         </div>
       )}
 
-      <div className="flex space-x-2 pt-4 border-t border-gray-700">
+      <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-700">
         <Link
           to={`/compilers/${compiler.id}/edit`}
-          className="flex-1 px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium text-center transition-colors"
+          className="flex-1 min-w-[100px] px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium text-center transition-colors"
         >
           Edit
         </Link>
         <button
+          onClick={() => onViewBuild(compiler.id, compiler.name)}
+          className="flex-1 min-w-[100px] px-3 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md text-sm font-medium transition-colors"
+        >
+          View Build
+        </button>
+        <button
           onClick={() => onRebuild(compiler.id)}
           disabled={compiler.build_status === 'building'}
-          className="flex-1 px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          className="flex-1 min-w-[100px] px-3 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           Rebuild
         </button>
