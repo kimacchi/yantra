@@ -1,5 +1,6 @@
 """Yantra API - Main application entry point."""
 import uvicorn
+import logging
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 
@@ -11,6 +12,12 @@ from config import (
     API_LICENSE,
 )
 from routers import submissions_router, compilers_router, templates_router
+from database import SessionLocal
+from templates import seed_templates
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # Create FastAPI application with enhanced documentation
 app = FastAPI(
@@ -36,6 +43,35 @@ app = FastAPI(
         },
     ],
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize application on startup."""
+    logger.info("🚀 Yantra API starting up...")
+
+    # Seed Dockerfile templates
+    db = SessionLocal()
+    try:
+        logger.info("📦 Seeding Dockerfile templates...")
+        results = seed_templates(db)
+
+        if results["added"]:
+            logger.info(f"✅ Added {len(results['added'])} new templates: {', '.join(results['added'])}")
+        if results["skipped"]:
+            logger.info(f"⏭️  Skipped {len(results['skipped'])} existing templates")
+        if results["errors"]:
+            logger.error(f"❌ Errors seeding templates: {results['errors']}")
+
+        total_templates = len(results["added"]) + len(results["skipped"])
+        logger.info(f"🎉 Template seeding complete! Total templates available: {total_templates}")
+
+    except Exception as e:
+        logger.error(f"❌ Failed to seed templates: {str(e)}")
+    finally:
+        db.close()
+
+    logger.info("✨ Yantra API ready to serve requests!")
 
 
 @app.get("/", include_in_schema=False)

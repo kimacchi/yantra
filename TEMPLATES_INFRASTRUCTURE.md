@@ -80,29 +80,60 @@ Created template browsing page with:
 4. **Use Template**: Click "Use Template" button to navigate to compiler creation page with template data pre-filled
 5. **Create Compiler**: The compiler form is automatically populated with the template's Dockerfile and run command
 
-## Next Steps
+## Template Auto-Loading System
 
-To add actual templates to the system:
+Templates are now automatically loaded into the database when the API starts!
 
-1. Run the migration: `psql -d yantra -f migrations/002_add_templates.sql`
-2. Add templates via API or directly in the database
-3. Example template creation:
-```bash
-curl -X POST http://localhost:8000/api/templates \
-  -H "Content-Type: application/json" \
-  -d '{
-    "id": "python-base",
-    "name": "Python Base",
-    "description": "Base Python runtime for general-purpose scripting",
+### Implementation
+
+**Location**: `api/templates/`
+
+**Files**:
+- `definitions.py` - 22 pre-defined language templates
+- `seed.py` - Seeding logic (idempotent)
+- `__init__.py` - Package initialization
+- `README.md` - Detailed documentation
+
+**Languages Included**:
+- Python 3.12, Python 3.11 Data Science
+- Node.js 20 LTS, Node.js 18 LTS, TypeScript 5
+- Go 1.22, Rust Stable
+- Java 21 LTS, Java 17 LTS
+- .NET 8 (C#)
+- PHP 8.3, PHP 8.2
+- GCC (C/C++)
+- Ruby 3.3, Perl 5, R 4, Lua 5.4
+- Swift 5, Kotlin JVM, Scala 3
+- Elixir 1.16, Haskell 9
+
+### How It Works
+
+1. API startup triggers `@app.on_event("startup")` in `main.py`
+2. `seed_templates(db)` is called from `templates/seed.py`
+3. Templates from `definitions.py` are checked against the database
+4. New templates are inserted; existing ones are skipped (idempotent)
+5. Results are logged to console
+
+### Adding New Templates
+
+Simply edit `api/templates/definitions.py` and restart the API:
+
+```python
+LANGUAGE_TEMPLATES.append({
+    "id": "mylang-1.0",
+    "name": "MyLang 1.0",
+    "description": "Your language description",
     "category": "language",
-    "dockerfile_template": "FROM python:3.11-slim\nWORKDIR /sandbox\nRUN useradd -m -u 1000 sandbox && chown sandbox:sandbox /sandbox\nUSER sandbox\nCMD [\"python\", \"-\"]",
-    "default_run_command": ["python", "-"],
-    "tags": ["python", "general"],
-    "icon": "🐍",
+    "dockerfile_template": "FROM ...",
+    "default_run_command": ["mylang"],
+    "tags": ["mylang", "tag2"],
+    "icon": "🔥",
     "author": "yantra",
-    "is_official": true
-  }'
+    "is_official": True,
+})
 ```
+
+See `api/templates/README.md` for full documentation.
 
 ## API Documentation
 
