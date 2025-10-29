@@ -21,6 +21,12 @@ export default function Navbar() {
               Compilers
             </Link>
             <Link
+              to="/templates"
+              className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors"
+            >
+              Templates
+            </Link>
+            <Link
               to="/compilers/new"
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md text-sm font-medium transition-colors"
             >

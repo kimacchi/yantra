@@ -1,12 +1,16 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { compilerApi } from '../api/compilerApi';
 import { CreateCompilerRequest } from '../types/compiler';
 import CompilerForm from '../components/CompilerForm';
 
 export default function CreateCompilerPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
+
+  // Get template data from navigation state if available
+  const templateData = location.state?.template;
 
   const handleSubmit = async (data: CreateCompilerRequest) => {
     setIsLoading(true);
@@ -33,12 +37,20 @@ export default function CreateCompilerPage() {
         </button>
         <h1 className="text-3xl font-bold text-white">Create New Compiler</h1>
         <p className="text-gray-400 mt-1">
-          Define a new runtime environment for code execution
+          {templateData ? 'Using template to create runtime environment' : 'Define a new runtime environment for code execution'}
         </p>
       </div>
 
+      {templateData && (
+        <div className="mb-4 bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
+          <p className="text-blue-400">
+            Template loaded: <span className="font-semibold">{templateData.suggestedName}</span>
+          </p>
+        </div>
+      )}
+
       <div className="bg-gray-800 rounded-lg border border-gray-700 p-6">
-        <CompilerForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <CompilerForm onSubmit={handleSubmit} isLoading={isLoading} initialData={templateData} />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import Navbar from './components/Navbar';
 import CompilersListPage from './pages/CompilersListPage';
 import CreateCompilerPage from './pages/CreateCompilerPage';
 import EditCompilerPage from './pages/EditCompilerPage';
+import TemplatesPage from './pages/TemplatesPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<CompilersListPage />} />
           <Route path="/compilers/new" element={<CreateCompilerPage />} />
           <Route path="/compilers/:id/edit" element={<EditCompilerPage />} />
+          <Route path="/templates" element={<TemplatesPage />} />
         </Routes>
       </div>
     </BrowserRouter>

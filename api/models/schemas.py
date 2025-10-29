@@ -81,3 +81,43 @@ class CompilerResponse(BaseModel):
 
     class Config:
         from_attributes = True
+
+
+# Template Schemas
+class TemplateResponse(BaseModel):
+    """Schema for Dockerfile template response."""
+
+    id: str
+    name: str
+    description: str
+    category: str
+    dockerfile_template: str
+    default_run_command: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
+    icon: Optional[str] = None
+    author: str
+    is_official: bool
+    created_at: str
+    updated_at: str
+
+    class Config:
+        from_attributes = True
+
+
+class CreateTemplateRequest(BaseModel):
+    """Schema for creating a new Dockerfile template."""
+
+    id: str = Field(..., description="Unique identifier (e.g., 'python-base')")
+    name: str = Field(..., description="Display name")
+    description: str = Field(..., description="Template description")
+    category: str = Field(
+        ..., description="Template category (language, framework, tool, os)"
+    )
+    dockerfile_template: str = Field(..., description="Dockerfile template content")
+    default_run_command: Optional[List[str]] = Field(
+        None, description="Suggested run command (e.g., ['python', '-'])"
+    )
+    tags: Optional[List[str]] = Field(None, description="Tags for search/filtering")
+    icon: Optional[str] = Field(None, description="Icon or emoji identifier")
+    author: str = Field(default="yantra", description="Template author")
+    is_official: bool = Field(default=False, description="Official template flag")

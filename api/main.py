@@ -10,7 +10,7 @@ from config import (
     API_CONTACT,
     API_LICENSE,
 )
-from routers import submissions_router, compilers_router
+from routers import submissions_router, compilers_router, templates_router
 
 # Create FastAPI application with enhanced documentation
 app = FastAPI(
@@ -29,6 +29,10 @@ app = FastAPI(
         {
             "name": "Compilers",
             "description": "Operations for managing compiler/runtime configurations and Docker images.",
+        },
+        {
+            "name": "Templates",
+            "description": "Operations for browsing and managing Dockerfile templates.",
         },
     ],
 )
@@ -49,6 +53,7 @@ async def health_check():
 # Include routers
 app.include_router(submissions_router)
 app.include_router(compilers_router)
+app.include_router(templates_router)
 
 
 if __name__ == "__main__":

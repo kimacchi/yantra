@@ -46,3 +46,22 @@ class Submission(Base):
     files_directory = Column(String(500))  # Path to job's file directory
     created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
     completed_at = Column(TIMESTAMP(timezone=True))
+
+
+class DockerfileTemplate(Base):
+    """Dockerfile template model."""
+
+    __tablename__ = "dockerfile_templates"
+
+    id = Column(String(50), primary_key=True)
+    name = Column(String(100), nullable=False)
+    description = Column(Text, nullable=False)
+    category = Column(String(50), nullable=False)  # language, framework, tool, os
+    dockerfile_template = Column(Text, nullable=False)
+    default_run_command = Column(Text)  # JSON string
+    tags = Column(Text)  # JSON array for search/filtering
+    icon = Column(String(50))  # emoji or icon identifier
+    author = Column(String(100), default="yantra")
+    is_official = Column(Boolean, default=False)
+    created_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
+    updated_at = Column(TIMESTAMP(timezone=True), server_default=func.now())
