@@ -4,6 +4,7 @@ import CompilersListPage from './pages/CompilersListPage';
 import CreateCompilerPage from './pages/CreateCompilerPage';
 import EditCompilerPage from './pages/EditCompilerPage';
 import TemplatesPage from './pages/TemplatesPage';
+import TestEnvironmentPage from './pages/TestEnvironmentPage';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
           <Route path="/compilers/new" element={<CreateCompilerPage />} />
           <Route path="/compilers/:id/edit" element={<EditCompilerPage />} />
           <Route path="/templates" element={<TemplatesPage />} />
+          <Route path="/test" element={<TestEnvironmentPage />} />
         </Routes>
       </div>
     </BrowserRouter>
